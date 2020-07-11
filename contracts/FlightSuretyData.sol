@@ -10,7 +10,30 @@ contract FlightSuretyData {
     /********************************************************************************************/
 
     address private contractOwner;                                      // Account used to deploy contract
-    bool private operational = true;                                    // Blocks all state changes throughout the contract if false
+    bool private operational = true;                                   // Blocks all state changes throughout the contract if false
+    
+    struct Insurance {
+        address airline;
+        address passenger;
+        string flight;
+        uint256 amount;
+        uint256 payout;
+        bool isOpen;        
+    }
+
+    struct VoteQueue {
+        uint8 vote;
+        bool isQueued;
+    }
+
+    mapping(address => VoteQueue) private countVote;            // Track the number of votes for an airline
+    mapping(address => Insurance) insurance;             // Track all purchased insurances
+    mapping(string => address[]) insurees;
+    mapping(address => uint256) private payment;                // Add values to be paid
+    // address[] memory insurees = new address[]();              // Keep track of the addresses that bought an insurance 
+    // mapping (address => uint256) private insurancesIndexes;  // Keep track the index of the address in the insurances array
+
+    
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -56,6 +79,7 @@ contract FlightSuretyData {
         _;
     }
 
+
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
@@ -89,21 +113,153 @@ contract FlightSuretyData {
         operational = mode;
     }
 
+    /**
+    * @dev Get passenger insurance
+    *
+    * @return Insurance struct { address airline; address passenger; string flight; uint256 amount; }
+    */      
+    function getInsurance
+                            (
+                                address _passenger
+                            ) 
+                            external 
+                            view 
+                            returns
+                            (
+                                address airline,
+                                address passenger,
+                                string flight,
+                                uint256 amount,
+                                uint256 payout,
+                                bool open 
+                            ) 
+    {
+        airline = insurance[_passenger].airline;
+        passenger = insurance[_passenger].passenger;
+        flight = insurance[_passenger].flight;
+        amount = insurance[_passenger].amount;
+        payout = insurance[_passenger].payout;
+        open = insurance[_passenger].isOpen;
+
+        return
+        (
+            airline,
+            passenger,
+            flight,
+            amount,
+            payout,
+            open
+        );
+    }
+
+
+    /**
+    * @dev Get passenger addresses who bought an insurance
+    *
+    * @return An array of addresses that represent the bought insurances
+    */   
+    function getInsurees(string flight) public view returns(address[]) {
+        return insurees[flight];
+    }
+
+
+
+    /**
+    * @dev Get passenger payout
+    *
+    * @return A uint256 representing the passenger payout
+    */      
+    function getPayout(address a) external view returns(uint256) {
+        return payment[a];
+    }
+
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
 
+   
+    /**
+    * @dev Return the number of votes of an airline in the registration queue
+    *      Can only be called from FlightSuretyApp contract
+    *
+    */   
+    function getVotes
+                            (
+                                address airline   
+                            )
+                            external
+                            view
+                            returns(uint8)
+    {
+        return countVote[airline].vote; 
+    }
+
+    
+    /**
+    * @dev Add vote to an airline in the registration queue
+    *      Can only be called from FlightSuretyApp contract
+    *
+    */ 
+    function addVotes
+                        (
+                            address airline,
+                            uint8 value   
+                        )
+                        external
+    {
+        countVote[airline].vote = countVote[airline].vote + value;
+   
+    }
+
+
+    /**
+    * @dev Delete an airline from the registration queue
+    *      Can only be called from FlightSuretyApp contract
+    *
+    */ 
+    function removeVotes
+                            (
+                                address airline
+                            )
+                            external
+    {
+        delete countVote[airline];     
+    }
+   
+   
    /**
     * @dev Add an airline to the registration queue
     *      Can only be called from FlightSuretyApp contract
     *
     */   
     function registerAirline
-                            (   
+                            (
+                                address airline   
                             )
                             external
-                            pure
     {
+        // require()
+        //countVote[airline] = 0;
+        countVote[airline] = VoteQueue({
+                vote: 0,
+                isQueued: true
+            });   
+    }
+
+    /**
+    * @dev Return if airline is in the registration queue
+    *      Can only be called from FlightSuretyApp contract
+    *
+    */   
+    function isQueued
+                        (
+                            address airline   
+                        )
+                        external
+                        view
+                        returns(bool)
+    {
+        return countVote[airline].isQueued; 
     }
 
 
@@ -112,11 +268,29 @@ contract FlightSuretyData {
     *
     */   
     function buy
-                            (                             
-                            )
-                            external
-                            payable
+                    (
+                    address airline,
+                    address passenger,
+                    string flight,
+                    uint256 amount,
+                    uint256 payout                             
+                    )
+                    external
+                    payable
     {
+
+        insurance[passenger] = Insurance({
+            airline: airline,
+            passenger: passenger,
+            flight: flight,
+            amount: amount,
+            payout: payout,
+            isOpen: false
+        });
+
+        //uint256 i = insurees.length;
+        //insurancesIndexes[passenger] = i;
+        insurees[flight].push(passenger);
 
     }
 
@@ -125,10 +299,12 @@ contract FlightSuretyData {
     */
     function creditInsurees
                                 (
+                                    address p,
+                                    uint256 a
                                 )
                                 external
-                                pure
     {
+        payment[p] = a;
     }
     
 
@@ -138,10 +314,22 @@ contract FlightSuretyData {
     */
     function pay
                             (
+                                address account
                             )
                             external
-                            pure
+                            returns
+                            (
+                                uint256
+                            )
     {
+
+        //require(msg.sender == tx.origin, "Contracts not allowed");
+        //require(payout[msg.sender] > 0, "Insufficient funds");
+        
+        uint256 amount = payment[account];
+        payment[account] = payment[account].sub(amount);
+
+        return amount; 
     }
 
    /**
@@ -155,6 +343,13 @@ contract FlightSuretyData {
                             public
                             payable
     {
+        //require(msg.sender == airlines[msg.sender].airline, "You need to be a registered airline to add funds to this contract");
+        //require(msg.value == FUND_FEE, "We need 10 ether here");
+
+        //airlines[msg.sender].haveFund = true;
+        //airlines[msg.sender].value = msg.value;
+
+        //emit FundsReceived(msg.sender, msg.value);
     }
 
     function getFlightKey

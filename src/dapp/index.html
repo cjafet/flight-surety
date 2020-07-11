@@ -20,11 +20,34 @@
     </nav>
 
     <main class="container">
-
-        <div id="display-wrapper" class="top-20">
+        <div class="row top-20">
+            <btn class="btn btn-primary mr-2" id="add-funds">Add Funds</btn>
+            <btn class="btn btn-primary mr-2" id="get-insurance">Get Passenger Insurance</btn>
+            <btn class="btn btn-primary mr-2" id="pay-passenger">Get Paid</btn>
         </div>
         <div class="row top-20">
-            <label class="form">Flight</label> <input type="text" id="flight-number"> <btn class="btn btn-primary" id="submit-oracle">Submit to Oracles</btn>
+            <label class="form">Flight Status:</label> <input type="text" id="flight-number"> <btn class="btn btn-primary" id="submit-oracle">Submit to Oracles</btn>
+        </div>
+        <div class="row top-20">
+            <label class="form">Insurance</label> 
+            <!-- <select id="airline" name="airline">
+            </select>   -->
+            <select class="mr-3" id="insurance-flight" name="insurance-flight">
+                <option value="1010">Flight 1010</option>
+                <option value="2020">Flight 2020</option>
+                <option value="3030">Flight 3030</option>
+                <option value="4040">Flight 4040</option>
+            </select> 
+            <label class="form">Insurance Value</label>  
+            <select class="mr-2" id="insurance-value" name="insurance-value">
+                <option value="0.25">0.25</option>
+                <option value="0.50">0.50</option>
+                <option value="0.75">0.75</option>
+                <option value="1.00">1.00</option>
+            </select> 
+            <btn class="btn btn-primary" id="buy-insurance">Buy Insurance</btn>
+            <br/>
+            <div id="display-wrapper" class="top-20"></div>
         </div>
     </main>
 

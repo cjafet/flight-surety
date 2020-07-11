@@ -40,3 +40,7 @@ label.form {
 input {
     margin-right: 30px;
 }
+
+.break-word {
+    word-break: break-all;
+}

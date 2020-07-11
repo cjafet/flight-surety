@@ -37,20 +37,85 @@ export default class Contract {
        let self = this;
        self.flightSuretyApp.methods
             .isOperational()
-            .call({ from: self.owner}, callback);
+            .call({ from: this.owner}, callback);
     }
 
     fetchFlightStatus(flight, callback) {
         let self = this;
         let payload = {
-            airline: self.airlines[0],
+            airline: this.owner, //self.airlines[0],
             flight: flight,
             timestamp: Math.floor(Date.now() / 1000)
         } 
         self.flightSuretyApp.methods
             .fetchFlightStatus(payload.airline, payload.flight, payload.timestamp)
-            .send({ from: self.owner}, (error, result) => {
+            .send({ from: this.owner}, (error, result) => {
                 callback(error, payload);
             });
+    }
+
+    addFunds(callback) {
+       let self = this;
+       let payload = {
+            airline: this.owner,
+            //value: amount
+        } 
+       self.flightSuretyApp.methods
+            .addFunds()
+            .send({ from: payload.airline, value: "10000000000000000000", gas: 4700000 }, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    buyInsurance(flight, amount, callback) {
+       let self = this;
+       let payload = {
+            airline: this.owner,//self.airlines[0],
+            flight: flight,
+            value: amount
+        } 
+       self.flightSuretyApp.methods
+            .buyInsurance(payload.airline, payload.flight)
+            .send({ from: this.passengers[1], value: amount, gas: 4700000 }, (error, result) => {
+                callback(error, payload);
+            });
+    }
+
+    getInsurance(callback) {
+       let self = this;
+       let payload = {
+            passenger: this.passengers[1],
+        } 
+       self.flightSuretyApp.methods
+            .getInsurance(payload.passenger)
+            .call({ from: this.owner }, (error, result) => {
+                console.log({
+                    airline: result._air, 
+                    passenger: result._pas, 
+                    flight: result._fli, 
+                    amount: result._amo,
+                    payout: result._payout 
+                });
+                callback(error, result);
+            });
+    }
+
+    payPassenger(callback) {
+       let self = this; 
+       self.flightSuretyApp.methods
+        .getInsurance(this.passengers[1])
+        .call({ from: this.owner }, (error, result) => {
+        
+            let air = result._air; 
+            let p1 = result._pas;
+            let amount = result._payout; 
+            
+       self.flightSuretyApp.methods
+            .payPassenger(p1)
+            .send({ from: air, value: amount, gas: 4700000 }, (error, result) => {
+                callback(error, result);
+            });
+        
+        });
     }
 }
