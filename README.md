@@ -27,7 +27,8 @@ The following events are available and can be viewed in the server terminal:
 ## Running tests
 
 Running tests in the truffle console is more stable.
-Type truffle develop in the terminal. Next type test test/flightSurety.js.
+
+Type `truffle develop` in the terminal. Next type `test test/flightSurety.js`.
 
 
 ## Install
