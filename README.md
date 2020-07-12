@@ -3,7 +3,7 @@
 
 ## DAPP
 
-The suggested flow is to start by trying to buy an insurance. An error message of "Airline not yet available to sell insurance" should be prompted in the "Operational Status" area since we have not added any funds yet. After receiving funds we should be able to buy insurance, display or get the insurance information and send a request of flight status to Oracles. This will trigger the callOracle and submitOracleResponse functions in the server. If Oracles report a status code of late airline, the contract will call the processFlightStatus function which will credit passenger with 1.5X the amount they paid.
+The suggested flow is to start by trying to buy an insurance. An error message of "Airline not yet available to sell insurance" should be prompted in the "Operational Status" area since we have not added any funds yet. After receiving funds we should be able to buy insurance, display or get the insurance information and send a request of flight status to Oracles. This will trigger the callOracle and submitOracleResponse functions in the server. If Oracles report a status code of late airline, the contract will call the processFlightStatus function which will credit passenger with 1.5X the amount they paid and the passenger should be able to get paid.
 
 ## Server
 
