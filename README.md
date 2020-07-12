@@ -38,6 +38,7 @@ This repository contains Smart Contract code in Solidity (using Truffle), tests 
 To install, download or clone the repo, then:
 
 `npm install`
+`npm install webpack-cli -g`
 `truffle compile`
 
 ## Develop Client
