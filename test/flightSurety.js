@@ -252,33 +252,6 @@ contract('Flight Surety Tests', async (accounts) => {
 
   });
 
-
-    it(`should not be able to add same airline`, async function () {
-
-      let votes5, countAirlines;
-
-      try 
-      {
-
-        // Try add 5th airline again
-        //await config.flightSuretyApp.registerAirline(accounts[5], {from: accounts[0]});
-        //await config.flightSuretyApp.setAirlineStatus(accounts[5], {from: accounts[0]});
-
-        // Get the number of airlines added to the contract
-        countAirlines = await config.flightSuretyApp.getNumberOfAirlines();
-        console.log("Number of airlines:", countAirlines.toNumber());
-
-      }
-      catch(e) 
-      {
-        console.log("ERROR:",e.message);
-      }
-      
-      assert.equal(countAirlines, 5, "Should have 5 airlines registered in the contract");
-
-  });
-
-
       it(`should add funds to airline`, async function () {
 
       let result, eth;
@@ -363,7 +336,6 @@ contract('Flight Surety Tests', async (accounts) => {
         await config.flightSuretyApp.addFunds({from: airline, value: "10000000000000000000"});
 
         // Buy flight insurance
-        //await config.flightSuretyApp.buyInsurance(airline, flight, {from: passenger, value: web3.utils.toWei(amount, "ether") });
         await config.flightSuretyApp.buyInsurance(airline, flight, {from: passenger, value: "1000000000000000000" });
         
       }
@@ -430,12 +402,9 @@ contract('Flight Surety Tests', async (accounts) => {
         console.log("Initial Passanger 1 balance is:", fromWei(await web3.eth.getBalance(p1)));
         
         // Buy insurance with different values
-        //await config.flightSuretyApp.buyInsurance(airline, flight, {from: p1, value: web3.utils.toWei(amount1, "ether")});
-        //await config.flightSuretyApp.buyInsurance(airline, flight2, {from: p2, value: web3.utils.toWei(amount2, "ether")});
+
         await config.flightSuretyApp.buyInsurance(airline, flight, {from: p1, value: "1000000000000000000" });
         await config.flightSuretyApp.buyInsurance(airline, flight2, {from: p2, value: "500000000000000000" });
-        
-        //await config.flightSuretyApp.buyInsurance(airline, flight2, {from: p2, value: web3.utils.fromWei(amount2, "ether")});
 
         console.log("Passanger 1 balance is:", fromWei(await web3.eth.getBalance(p1)));
         console.log("----------------------------------------------------------------------------")
@@ -490,7 +459,6 @@ contract('Flight Surety Tests', async (accounts) => {
       {
         
         let passenger_insurance = await config.flightSuretyData.getInsurance(p1);
-        //console.log("Passenger_Insurance_1  :\n", passenger_insurance.airline, passenger_insurance.passenger, passenger_insurance.flight, passenger_insurance.amount.toString(), passenger_insurance.payout.toString(), passenger_insurance.open);
         
         let tx = await config.flightSuretyApp.addFunds({from: passenger_insurance.airline, value: "10000000000000000000" });
         const CONTRACT_ADDRESS = tx.receipt.to;

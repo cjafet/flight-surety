@@ -55,8 +55,6 @@ contract FlightSuretyApp {
     uint256 public constant INSURANCE_FEE = 1 ether;             // Fee to be paid when registering oracle
 
     FlightSuretyData flightSuretyData;
-
-    mapping(address => uint256) public byout;
     
 
  
