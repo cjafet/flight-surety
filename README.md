@@ -49,6 +49,7 @@ To run truffle tests:
 
 To use the dapp:
 
+`truffle compile`
 `truffle migrate`
 `npm run dapp`
 
