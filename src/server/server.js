@@ -71,7 +71,6 @@ function callOracle(oracle_addr,index,airline,flight,timestamp) {
 }
 
 
-
 flightSuretyApp.events.OracleRequest({
     fromBlock: 0
   }, function (error, event) {

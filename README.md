@@ -1,6 +1,34 @@
-# FlightSurety
+# How does it work?
 
-FlightSurety is a sample application project for Udacity's Blockchain course.
+
+## DAPP
+
+The suggested flow is to start by trying to buy an insurance. An error message of "Airline not yet available to sell insurance" should be prompted in the "Operational Status" area since we have not added any funds yet. After receiving funds we should be able to buy insurance, display or get the insurance information and send a request of flight status to Oracles. This will trigger the callOracle and submitOracleResponse functions in the server. If Oracles report a status code of late airline, the contract will call the processFlightStatus function which will credit passenger with 1.5X the amount they paid.
+
+## Server
+
+The server will start by initiallizing 40 oracles. After that it will be ready to receive any event call from our DAPP client.
+
+## Features
+
+The first airline is registered when the contract is deployed with isActive status equals to true and haveFunds status equals to false. Next airlines are added to the registration queue by calling the registerAirline function. To confirme registration a registered airline must call the setAirlineStatus function. The first 3 airlines will be registered without the need of approval of other airlines, but after that, new airlines will need multi-party consensus of 50% of registered airlines.
+
+To be able to sell insurance the airline will need to submit funding of 10 ether to the contract. We can test this from the Dapp by trying to sell an insurance before adding funds to them.
+
+## Events
+
+The following events are available and can be viewed in the server terminal:
+- OracleRequest
+- BoughtInsurance
+- FlightStatusInfo
+- PassengerPaid
+- FundsReceived
+
+## Running tests
+
+Running tests in the truffle console is more stable.
+Type truffle develop in the terminal. Next type test test/flightSurety.js.
+
 
 ## Install
 
