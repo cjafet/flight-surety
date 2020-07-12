@@ -48,7 +48,7 @@ let initOracles = (acc) => new Promise((resolve, reject) => {
             indexes.push([acc, ...result]);
             console.log(indexes);
             resolve();
-            if (i < 19) {
+            if (i < 39) {
               i++;
               initOracles(addresses[i]);
             }
@@ -58,10 +58,13 @@ let initOracles = (acc) => new Promise((resolve, reject) => {
 initOracles(addresses[0]);
 
 
-function callOracle(oracle_addr,index,airline,flight,timestamp,status) {
+function callOracle(oracle_addr,index,airline,flight,timestamp) {
   //console.log(flightSuretyApp.methods);
+  let random = Math.floor(Math.random() * 6);
+  let _status = status[random]; //20
+  console.log(oracle_addr,index,airline,flight,timestamp,_status);
   flightSuretyApp.methods
-    .submitOracleResponse(index, airline, flight, timestamp, status)
+    .submitOracleResponse(index, airline, flight, timestamp, _status)
     .send({ from: oracle_addr, gas: 4700000 }, (error, result) => {
         console.log("Result is:",result);
     });
@@ -74,15 +77,13 @@ flightSuretyApp.events.OracleRequest({
   }, function (error, event) {
     if (error) console.log(error)
     let e = event.returnValues;
-    let random = Math.floor(Math.random() * 6);
-    let _status = 20; //status[random];
     console.log(event);
-    console.log(e.index,e.airline,e.flight,e.timestamp,_status);
+    console.log(e.index,e.airline,e.flight,e.timestamp);
     indexes.forEach(element => {
       console.log(element);
       if(element[1] == e.index || element[2] == e.index || element[3] == e.index) {
-        console.log(element[0],e.index,e.airline,e.flight,e.timestamp,_status);
-        callOracle(element[0],e.index,e.airline,e.flight,e.timestamp,_status);
+        //console.log(element[0],e.index,e.airline,e.flight,e.timestamp);
+        callOracle(element[0],e.index,e.airline,e.flight,e.timestamp);
       }
     });
 });
@@ -106,6 +107,13 @@ flightSuretyApp.events.PassengerPaid({
   }, function (error, event) {
     if (error) console.log(error);
     console.log("PassengerPaid: ",event.returnValues);
+});
+
+flightSuretyApp.events.FundsReceived({
+    fromBlock: 0
+  }, function (error, event) {
+    if (error) console.log(error);
+    console.log("FundsReceived: ",event.returnValues);
 });
 
 

@@ -343,10 +343,6 @@ contract FlightSuretyApp {
     
     }
 
-    // function payPassenger(address p) public view returns(uint256) {
-
-    //     return debit(p);
-    // }
 
     function payPassenger(address acc) public payable
     {
